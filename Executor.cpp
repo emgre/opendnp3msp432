@@ -63,8 +63,10 @@ void Executor::OnCancel(Timer* pTimer)
 
 void Executor::Init()
 {
+	gpExecutor = this;
+
 	MAP_SysTick_enableModule();
-	MAP_SysTick_setPeriod(150000); // 100 kHz
+	MAP_SysTick_setPeriod(1500); // 100 kHz
 	MAP_SysTick_registerInterrupt(&SYSTICK_ISR);
 	MAP_SysTick_enableInterrupt();
 }

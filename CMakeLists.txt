@@ -7,8 +7,9 @@ if(NOT CMAKE_CROSSCOMPILING)
     message(FATAL_ERROR "This project must be cross-compiled. Please set CMAKE_TOOLCHAIN_FILE to point to msp432-toolchain.cmake")
 endif()
 
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --specs=nosys.specs")
-set(CMAKE_BUILD_TYPE MinSizeRel)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${PROJECT_SOURCE_DIR}/msp432p401r.lds -specs nosys.specs -specs nano.specs")
+set(CMAKE_BUILD_TYPE RelWithDebInfo)
 
 add_subdirectory(opendnp3 EXCLUDE_FROM_ALL)
 include_directories(opendnp3/cpp/libs/include)
@@ -18,7 +19,6 @@ add_subdirectory(driverlib)
 include_directories(driverlib)
 
 set(SRC
-    interrupts_msp432p401r_gcc.c
     startup_msp432p401r_gcc.c
     system_msp432p401r.c
 	main.cpp
@@ -28,6 +28,6 @@ set(SRC
     LinkRouter.cpp
 )
 
-add_executable(OpenDNP3.out ${SRC})
+add_executable(${LIBNAME} ${SRC})
 target_link_libraries(${LIBNAME} opendnp3)
 target_link_libraries(${LIBNAME} driverlib)

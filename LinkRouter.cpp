@@ -18,22 +18,21 @@ const eUSCI_UART_Config uartConfig =
 
 void UART_ISR()
 {
-	auto status = MAP_UART_getInterruptStatus(EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT|EUSCI_A_UART_TRANSMIT_INTERRUPT);
+	auto status = MAP_UART_getEnabledInterruptStatus(EUSCI_A0_BASE);
 
-	if(status | EUSCI_A_UART_RECEIVE_INTERRUPT)
+	if(status & EUSCI_A_UART_RECEIVE_INTERRUPT)
 	{
 		MAP_UART_clearInterruptFlag(EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT);
 		auto data = MAP_UART_receiveData(EUSCI_A0_BASE);
 		gLinkParser->Receive(data);
 	}
 
-	if(status | EUSCI_A_UART_TRANSMIT_INTERRUPT)
+	if(status & EUSCI_A_UART_TRANSMIT_INTERRUPT)
 	{
-		MAP_UART_clearInterruptFlag(EUSCI_A0_BASE, EUSCI_A_UART_TRANSMIT_INTERRUPT);
-
 		uint8_t txByte = 0;
 		if(gLinkParser->GetTx(txByte))
 		{
+			MAP_UART_clearInterruptFlag(EUSCI_A0_BASE, EUSCI_A_UART_TRANSMIT_INTERRUPT);
 			MAP_UART_transmitData(EUSCI_A0_BASE, txByte);
 		}
 

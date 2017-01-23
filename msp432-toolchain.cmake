@@ -11,7 +11,6 @@ set(COMPILER_PATH ${TI_INSTALL_DIR}/arm_compiler)
 set(MSP_INC_DIR ${TI_INSTALL_DIR}/arm/include)
 set(CMSIS_INC_DIR ${MSP_INC_DIR}/CMSIS)
 set(GCC_INC_DIR ${COMPILER_PATH}/arm-none-eabi/include)
-set(LDS_FILE ${MSP_INC_DIR}/${DEVICE}.lds)
 
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_FIND_ROOT_PATH ${COMPILER_PATH})
@@ -32,11 +31,25 @@ CMAKE_FORCE_CXX_COMPILER(${GCC_CXX} GNU)
 # Add definitions and flags
 add_definitions(-D__${DEVICE_UPPER}__ -DTARGET_IS_MSP432P4XX -Dgcc)
 
-set(COMMON_FLAGS "-mcpu=cortex-m4 -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mthumb -Wall -g -fmessage-length=0 -fno-exceptions -ffunction-sections -fdata-sections -fsingle-precision-constant")
-set(CMAKE_C_FLAGS "${COMMON_FLAGS} -std=c99" CACHE STRING "" FORCE)
-set(CMAKE_CXX_FLAGS "${COMMON_FLAGS} -fno-rtti -std=c++11" CACHE STRING "" FORCE)
+set(COMMON_FLAGS "-mcpu=cortex-m4 -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mthumb -Wall")
+set(CMAKE_C_FLAGS "${COMMON_FLAGS}" CACHE STRING "" FORCE)
+set(CMAKE_CXX_FLAGS "${COMMON_FLAGS}" CACHE STRING "" FORCE)
 
-set(CMAKE_EXE_LINKER_FLAGS "-T${LDS_FILE} -Wl,--gc-sections -lc -lgcc -lnosys" CACHE STRING "" FORCE)
+set(COMMON_FLAGS_DEBUG "-g")
+set(CMAKE_C_FLAGS_DEBUG "${COMMON_FLAGS_DEBUG}" CACHE STRING "" FORCE)
+set(CMAKE_CXX_FLAGS_DEBUG "${COMMON_FLAGS_DEBUG}" CACHE STRING "" FORCE)
+
+set(COMMON_FLAGS_RELEASE "-fno-exceptions -ffunction-sections -fdata-sections -fsingle-precision-constant -Os")
+set(CMAKE_C_FLAGS_RELEASE "${COMMON_FLAGS_RELEASE}" CACHE STRING "" FORCE)
+set(CMAKE_CXX_FLAGS_RELEASE "${COMMON_FLAGS_RELEASE} -fno-rtti" CACHE STRING "" FORCE)
+
+set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_DEBUG} ${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "" FORCE)
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "" FORCE)
+
+set(COMMON_FLAGS_LINKER "-lc -lgcc -lnosys")
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${COMMON_FLAGS_LINKER}" CACHE STRING "" FORCE)
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-Wl,--gc-sections ${COMMON_FLAGS_LINKER}" CACHE STRING "" FORCE)
+set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "-Os -Wl,--gc-sections ${COMMON_FLAGS_LINKER}" CACHE STRING "" FORCE)
 
 # Add include directories
 include_directories(${GCC_INC_DIR} ${CMSIS_INC_DIR} ${MSP_INC_DIR})
