@@ -23,4 +23,4 @@ To debug, follow the steps in the doc file available from TI. Briefly, it invole
 Note that the GDB agent made by TI does not specify the memory map. Therefore, placing breakpoints will fail because the code is executed from the Flash and GDB tries to insert software breakpoints. In order to force it using hardware breakpoints, you can do `mem 0 0 ro` to specify that all the memory is read-only. A proper memory map could help you modify variables at runtime.
 
 ## How to run
-Simply build and flash the MSP432, then connect a master DNP3 on serial port COMx (mine is COM3) with a baudrate of 9600 and standard UART settings. I personnaly used the master demo of OpenDNP3 and modified 2-3 lines to get it running with the desired settings.
+Simply build and flash the MSP432, then connect a master DNP3 on serial port COMx (mine is COM3) with a baudrate of 9600 and standard UART settings. The master link layer address is 1 and the outstation link layer address is 1024. I personnaly used the master demo of OpenDNP3 and modified 2-3 lines to get it running with the desired settings.
